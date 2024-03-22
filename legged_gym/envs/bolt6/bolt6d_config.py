@@ -32,24 +32,24 @@ from legged_gym.envs.base.legged_robot_config import LeggedRobotCfg, LeggedRobot
 
 class Bolt6DCfg( LeggedRobotCfg ):
     class env( LeggedRobotCfg.env):
-        num_envs = 8192 # robot count
+        num_envs = 4096 # robot count
         num_observations = 29
         '''
         self.base_lin_vel:  torch.Size([4096, 3])
         self.base_ang_vel:  torch.Size([4096, 3])
         self.projected_gravity:  torch.Size([4096, 3])
-        self.commands[:, :2]:  torch.Size([4096, 2])
+        self.commands[:, :2]:  torch.Size([4096, 3])
         (self.dof_pos - self.default_dof_pos):  torch.Size([4096, 6])
         self.dof_vel:  torch.Size([4096, 6])
         self.actions:  torch.Size([4096, 6])
 
-        3 + 3 + 3 + 2 + 6 + 6 + 6 = 29(num_observation)
+        3 + 3 + 3 + 3 + 6 + 6 + 6 = 30(num_observation)
         '''
         num_privileged_obs = None # if not None a priviledge_obs_buf will be returned by step() (critic obs for assymetric training). None is returned otherwise 
         num_actions = 6 # robot actuation
         env_spacing = 3.  # not used with heightfields/trimeshes 
         send_timeouts = True # send time out information to the algorithm
-        episode_length_s = 100 # episode length in seconds
+        episode_length_s = 10 # episode length in seconds
 
     class terrain( LeggedRobotCfg.terrain):
         mesh_type = 'plane' # Rui
@@ -77,7 +77,7 @@ class Bolt6DCfg( LeggedRobotCfg ):
         slope_treshold = 0.75 # slopes above this threshold will be corrected to vertical surfaces # Rui
 
     class commands( LeggedRobotCfg.commands):
-        # curriculum = False
+        curriculum = True
         max_curriculum = 1.
         num_commands = 2 # default: lin_vel_x, lin_vel_y, ang_vel_yaw, heading (in heading mode ang_vel_yaw is recomputed from heading error)
         resampling_time = 10. # time before command are changed[s]
@@ -86,8 +86,8 @@ class Bolt6DCfg( LeggedRobotCfg ):
         class ranges( LeggedRobotCfg.commands.ranges ):
             lin_vel_x = [0.4, 0.4] # min max [m/s] seems like less than or equal to 0.2 it sends 0 command
             lin_vel_y = [-0., 0.]   # min max [m/s]
-            ang_vel_yaw = [0, 0]    # min max [rad/s]
-            heading = [-3.14, 3.14]
+            # ang_vel_yaw = [-1, 1]    # min max [rad/s]
+            # heading = [-3.14, 3.14]
             
 
     class init_state( LeggedRobotCfg.init_state ):
@@ -96,19 +96,22 @@ class Bolt6DCfg( LeggedRobotCfg ):
         lin_vel = [0.0, 0.0, 0.0]  # x,y,z [m/s]
         ang_vel = [0.0, 0.0, 0.0]  # x,y,z [rad/s]
         default_joint_angles = { # = target angles [rad] when action = 0.0
-            'FL_HAA': 0.,
+            
+            'FL_HAA': 0.0,
             # 'hip_rotation_left': 0.,
-            'FL_HFE': 0.1,
+            # 'FL_HFE': 0.436332313,
+            'FL_HFE': 0.2,
             # 'thigh_joint_left': -1.8,
-            'FL_KFE': -0.25,
-            'FL_ANKLE': 0.,
+            # 'FL_KFE': -0.872664626,
+            'FL_KFE': -0.4,
+            # 'FL_ANKLE': 0.436332313,
 
-            'FR_HAA': -0.,
+            'FR_HAA': 0.0,
             # 'hip_rotation_right': 0.,
-            'FR_HFE': 0.1,
+            'FR_HFE': 0.2,
             # 'thigh_joint_right': -1.8,
-            'FR_KFE': -0.25,
-            'FR_ANKLE': 0.
+            'FR_KFE': -0.4,
+            # 'FR_ANKLE': 0.
         }
 
     class control( LeggedRobotCfg.control ):
@@ -123,7 +126,6 @@ class Bolt6DCfg( LeggedRobotCfg ):
                         'FR_HAA': 0.1,
                         'FR_HFE': 0.2,
                         'FR_KFE': 0.2,
-                        
                         #'FL_ANKLE': 200.,
                         #'FR_ANKLE': 200.
                         # 'toe_joint': 40.
@@ -131,10 +133,9 @@ class Bolt6DCfg( LeggedRobotCfg ):
         damping = { 'FL_HAA': 0.02, 
                     'FL_HFE': 0.02,
                     'FL_KFE': 0.01,
+
                     'FR_HAA': 0.02, 
-                    
                     'FR_HFE': 0.02,
-                    
                     'FR_KFE': 0.01,
                     
                     #'FL_ANKLE': 6.,
@@ -151,7 +152,7 @@ class Bolt6DCfg( LeggedRobotCfg ):
         decimation = 1
 
     class asset( LeggedRobotCfg.asset ):
-        file = '{LEGGED_GYM_ROOT_DIR}/resources/robots/bolt/urdf/bolt6.urdf'
+        file = '{LEGGED_GYM_ROOT_DIR}/resources/robots/bolt6/urdf/bolt6.urdf'
         name = "bolt6"
         foot_name = 'FR_FOOT'
         penalize_contacts_on = []
@@ -167,7 +168,6 @@ class Bolt6DCfg( LeggedRobotCfg ):
         self_collisions = 0 # 1 to disable, 0 to enable...bitwise filter
         replace_cylinder_with_capsule = True # replace collision cylinders with capsules, leads to faster/more stable simulation
         flip_visual_attachments = False # Some .obj meshes must be flipped from y-up to z-up
-        # fix_base_link = True
         
         density = 0.001
         angular_damping = 0.
@@ -193,12 +193,12 @@ class Bolt6DCfg( LeggedRobotCfg ):
             tracking_ang_vel = 0.
             lin_vel_z = -0.
             ang_vel_xy = -0.0
-            orientation = -0.25 # Rui
+            orientation = -10 # Rui
             torques = -5.e-3
             dof_vel = -0.0
             dof_acc = -0
             base_height = -0. 
-            feet_air_time = 0.
+            feet_air_time = 1.
             collision = -0.
             feet_stumble = -0.0 
             action_rate = -0.0
@@ -276,7 +276,7 @@ class Bolt6DCfgPPO( LeggedRobotCfgPPO ):
         init_noise_std = 1.0
         actor_hidden_dims = [512, 256, 128]
         critic_hidden_dims = [512, 256, 128]
-        activation = 'relu' # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
+        activation = 'elu' # can be elu, relu, selu, crelu, lrelu, tanh, sigmoid
         # only for 'ActorCriticRecurrent':
         # rnn_type = 'lstm'
         # rnn_hidden_size = 512
@@ -301,7 +301,7 @@ class Bolt6DCfgPPO( LeggedRobotCfgPPO ):
         policy_class_name = 'ActorCritic'
         algorithm_class_name = 'PPO'
         num_steps_per_env = 24 # per iteration
-        max_iterations = 1500 # number of policy updates
+        max_iterations = 3000 # number of policy updates
 
         # logging
         save_interval = 50 # check for potential saves every this many iterations

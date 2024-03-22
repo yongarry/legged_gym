@@ -37,7 +37,14 @@ from .anymal_c.flat.anymal_c_flat_config import AnymalCFlatCfg, AnymalCFlatCfgPP
 from .anymal_b.anymal_b_config import AnymalBRoughCfg, AnymalBRoughCfgPPO
 from .cassie.cassie import Cassie
 from .cassie.cassie_config import CassieRoughCfg, CassieRoughCfgPPO
+from .bolt6.bolt6d import Bolt6D
+from .bolt6.bolt6d_config import Bolt6DCfg, Bolt6DCfgPPO
 from .a1.a1_config import A1RoughCfg, A1RoughCfgPPO
+from .tocabi.tocabi import Tocabi
+from .tocabi.tocabi_config import TocabiRoughCfg, TocabiRoughCfgPPO
+from legged_gym.envs.h1.h1_config import H1RoughCfg, H1RoughCfgPPO
+from legged_gym.envs.h1.h1 import H1
+
 
 
 import os
@@ -49,3 +56,6 @@ task_registry.register( "anymal_c_flat", Anymal, AnymalCFlatCfg(), AnymalCFlatCf
 task_registry.register( "anymal_b", Anymal, AnymalBRoughCfg(), AnymalBRoughCfgPPO() )
 task_registry.register( "a1", LeggedRobot, A1RoughCfg(), A1RoughCfgPPO() )
 task_registry.register( "cassie", Cassie, CassieRoughCfg(), CassieRoughCfgPPO() )
+task_registry.register( "bolt6d", Bolt6D, Bolt6DCfg(), Bolt6DCfgPPO() )
+task_registry.register( "tocabi", Tocabi, TocabiRoughCfg(), TocabiRoughCfgPPO() )
+task_registry.register( "h1", H1, H1RoughCfg(), H1RoughCfgPPO())

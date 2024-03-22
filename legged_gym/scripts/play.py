@@ -73,9 +73,15 @@ def play(args):
     camera_vel = np.array([1., 1., 0.])
     camera_direction = np.array(env_cfg.viewer.lookat) - np.array(env_cfg.viewer.pos)
     img_idx = 0
-
+    # large_tensor = torch.randn(100, 100)
+    # torch.set_printoptions(edgeitems=large_tensor.numel(), threshold=large_tensor.numel() + 1)
+    # file = open("output.txt", "w")
+    # file1 = open("output1.txt", "w")
     for i in range(10*int(env.max_episode_length)):
         actions = policy(obs.detach())
+        # print(obs.detach().shape)
+        # print(obs.detach()[0,:], file=file)
+        # print(actions.detach()[0,:], file=file1)
         obs, _, rews, dones, infos = env.step(actions.detach())
         if RECORD_FRAMES:
             if i % 2:

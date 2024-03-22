@@ -106,7 +106,7 @@
     <child link="FL_UPPER_LEG"/>
     <!-- <limit effort="2.5" lower="-1.57" upper="1.57" velocity="20"/> -->
     <!-- <limit effort="18" lower="-1.57" upper="1.57" velocity="20"/> -->
-    <limit effort="2.5" lower="-1.57" upper="1.57" velocity="20"/>
+    <limit effort="2.5" lower="-1.57" upper="0.0" velocity="20"/>
     <!-- joints rotates around the y-axis -->
     <axis xyz="0 1 0"/>
     <origin rpy="0 0 0" xyz="0 0.0145 -0.0386"/>
@@ -329,7 +329,7 @@
     <parent link="FR_SHOULDER"/>
     <child link="FR_UPPER_LEG"/>
     <!-- <limit effort="2.5" lower="-1.57" upper="1.57" velocity="20"/> -->
-    <limit effort="2.5" lower="-1.57" upper="1.57" velocity="20"/>
+    <limit effort="2.5" lower="-1.57" upper="0.0" velocity="20"/>
     <!-- <limit effort="18" lower="-1.57" upper="1.57" velocity="20"/> -->
     <!-- joints rotates around the y-axis -->
     <axis xyz="0 1 0"/>
