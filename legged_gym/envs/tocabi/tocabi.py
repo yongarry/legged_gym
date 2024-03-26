@@ -41,7 +41,8 @@ from legged_gym.envs import LeggedRobot
 
 class Tocabi(LeggedRobot):
 
-    def _custom_init(self, cfg):
+    def __init__(self, cfg, sim_params, physics_engine, sim_device, headless):
+        super().__init__(cfg, sim_params, physics_engine, sim_device, headless)
         self.control_tick = torch.zeros(
             self.num_envs, 1, dtype=torch.int,
             device=self.device, requires_grad=False)
@@ -74,9 +75,17 @@ class Tocabi(LeggedRobot):
         if self.add_noise:
             self.obs_buf += (2 * torch.rand_like(self.obs_buf) - 1) * self.noise_scale_vec
 
-    def _custom_reset(self, env_ids):
+    def reset_idx(self, env_ids):
+        super().reset_idx(env_ids)
         self.control_tick[env_ids, 0] = 0
 
+    def _init_buffers(self):
+        super()._init_buffers()
+        rb_state_tensor = self.gym.acquire_rigid_body_state_tensor(self.sim)
+        self.gym.refresh_rigid_body_state_tensor(self.sim)
+        self.base_pos = self.root_states[:, 0:3]
+        self.rb_states = gymtorch.wrap_tensor(rb_state_tensor).view(self.num_envs, self.num_bodies, 13) # shape: num_envs, num_bodies, [pos, quat, lvel, avel]
+    
     def _reward_no_fly(self):
         
         contacts = self.contact_forces[:, self.feet_indices, 2] > 0.001
